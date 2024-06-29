@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.portfolio.gymapp.ui.theme.GymappTheme
 
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Greeting()
                 }
             }
         }
@@ -30,17 +31,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = stringResource(R.string.login),
         modifier = modifier
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,
+    //locale = "pt-rBR"
+)
 @Composable
 fun GreetingPreview() {
     GymappTheme {
-        Greeting("Android")
+        Greeting()
     }
 }
