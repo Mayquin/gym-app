@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(modifier: Modifier = Modifier) {
     Text(
-        text = stringResource(R.string.login),
+        text = stringResource(R.string.login_button),
         modifier = modifier
     )
 }

@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">gymapp</string>
-    <string name="login">Login</string>
+    <string name="app_name">Gym App Portfolio</string>
+
+<!-- Started Screen -->
+    <string name="register_button">Get Started</string>
+    <string name="login_button">Login</string>
 </resources>
