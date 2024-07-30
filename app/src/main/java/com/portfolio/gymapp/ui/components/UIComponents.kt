@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package pt.sibs.biometrics.modules.components
+package com.portfolio.gymapp.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -9,9 +9,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +26,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +35,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
@@ -55,10 +64,20 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -263,6 +282,7 @@ fun CustomDropdownSearching(dropdownData: DropDownData){
     }
 }
 
+@ExperimentalComposeUiApi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownSearchMenu(dropdownData: DropDownData){
@@ -338,7 +358,7 @@ fun TextFieldBase(modifier: Modifier = Modifier, initialValue:String, hintTextId
         text = it
         onValueChange(it)
     }, placeholder = {
-        TextBase(textId = hintTextId, textStyle = TextStyle(color = Color.Gray))
+        TextBase(textId = hintTextId, textStyle = commonTextStyle(color = Color.Gray))
     }, colors = customTextFieldColor(),
         modifier = modifier
             .height(40.dp)
@@ -445,4 +465,216 @@ fun CustomAlert(titleId: Int, descriptionId: Int, buttonTextId: Int, buttonClick
             }
         }
     )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PasswordTextField(
+    text: String,
+    modifier: Modifier = Modifier,
+    semanticContentDescription: String = "",
+    labelText: String = "",
+    validateStrengthPassword: Boolean = false,
+    hasError: Boolean = false,
+    onHasStrongPassword: (isStrong: Boolean) -> Unit = {},
+    onTextChanged: (text: String) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    val showPassword = remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        CustomizedTextField(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth()
+                .semantics { contentDescription = semanticContentDescription },
+            value = text,
+            onValueChange = onTextChanged,
+            placeholder = {
+                Text(
+                    text = labelText,
+                    style = commonTextStyle(color = Color.Gray),
+                    fontFamily = FontFamily.Default
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            singleLine = true,
+            isError = hasError,
+            visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val (iconId, iconColor) = if (showPassword.value) {
+                    Pair(R.drawable.ic_visibility_on,
+                        Color.Blue)
+                } else {
+                    Pair(R.drawable.ic_visibility_off,
+                        Color.Black)
+                }
+
+                IconButton(onClick = { showPassword.value = !showPassword.value }) {
+                    Icon(
+                        painter = painterResource(id = iconId),
+                        contentDescription = "Visibility",
+                        tint = iconColor
+                    )
+                }
+            },
+            colors = customTextFieldColor()
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = Color.White,
+//                unfocusedBorderColor = Color.White,
+//                textColor = Color.White,
+//                cursorColor = Color.White,
+//            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (validateStrengthPassword && text.isNotEmpty()) {
+            val strengthPasswordType = strengthChecker(text)
+            if (strengthPasswordType == StrengthPasswordTypes.STRONG) {
+                onHasStrongPassword(true)
+            } else {
+                onHasStrongPassword(false)
+            }
+            Text(
+                modifier = Modifier.semantics { contentDescription = "StrengthPasswordMessage" },
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Default
+                        )
+                    ) {
+                        append(stringResource(id = R.string.warning_password_level))
+                        withStyle(style = SpanStyle(color = Color.Yellow)) {
+                            when (strengthPasswordType) {
+                                StrengthPasswordTypes.STRONG ->
+                                    append(" ${stringResource(id = R.string.warning_password_level_strong)}")
+                                StrengthPasswordTypes.WEAK ->
+                                    append(" ${stringResource(id = R.string.warning_password_level_weak)}")
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
+
+fun strengthChecker(text: String): StrengthPasswordTypes {
+    return StrengthPasswordTypes.WEAK
+}
+
+enum class StrengthPasswordTypes {
+    STRONG,
+    WEAK
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConfirmPasswordTextField(
+    text: String,
+    confirmText: String,
+    modifier: Modifier = Modifier,
+    semanticContentDescription: String = "",
+    labelText: String = "",
+    hasError: Boolean = false,
+    onTextChanged: (text: String) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    val showPassword = remember { mutableStateOf(false) }
+    val matchError = remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+    ) {
+        CustomizedTextField(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth()
+                .semantics { contentDescription = semanticContentDescription },
+            value = text,
+            onValueChange = onTextChanged,
+            placeholder = {
+                Text(
+                    text = labelText,
+                    style = commonTextStyle(color = Color.Gray)
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            singleLine = true,
+            isError = hasError || matchError.value,
+            visualTransformation =
+            if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val (iconId, iconColor) = if (showPassword.value) {
+                    Pair(R.drawable.ic_visibility_on,
+                        Color.Blue)
+                } else {
+                    Pair(R.drawable.ic_visibility_off,
+                        Color.Black)
+                }
+
+                IconButton(onClick = { showPassword.value = !showPassword.value }) {
+                    Icon(
+                        painter = painterResource(id = iconId),
+                        contentDescription = "Visibility",
+                        tint = iconColor
+                    )
+                }
+            },
+            colors = customTextFieldColor()
+            /*colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.White,
+                textColor = Color.White,
+                cursorColor = Color.White,
+            )*/
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (confirmText != text) {
+            Text(
+                text = stringResource(id = R.string.error_password_no_match),
+                color = Color.Red,
+                fontSize = 10.sp,
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.semantics { contentDescription = "ConfirmPasswordMessage" },
+            )
+            matchError.value = true
+        } else {
+            matchError.value = false
+        }
+    }
+}
+
+
+@Preview
+@Composable
+fun PasswordTextFieldPreview(){
+    PasswordTextField(text = "", labelText = stringResource(id = R.string.password_hint)) {
+
+    }
 }

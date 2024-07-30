@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.portfolio.gymapp.R
-import pt.sibs.biometrics.modules.components.RoundedButton
-import pt.sibs.biometrics.modules.components.TextBase
+import com.portfolio.gymapp.ui.components.RoundedButton
+import com.portfolio.gymapp.ui.components.TextBase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
