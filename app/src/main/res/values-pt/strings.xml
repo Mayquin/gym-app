@@ -11,10 +11,13 @@
     <string name="email_hint">e.g user@domain.com</string>
     <string name="password">Password</string>
     <string name="password_hint">Password</string>
-    <string name="username">Username</string>
+    <string name="username">Confirm Password</string>
     <string name="username_hint">Nickname</string>
     <string name="error_password_no_match">Passwords doesn\'t match with each other</string>
     <string name="warning_password_level">Password level security</string>
     <string name="warning_password_level_strong">Strong</string>
     <string name="warning_password_level_weak">Weak</string>
+
+    <!-- Home Screen -->
+    <string name="placeholderHomeDescription">Work in progress…</string>
 </resources>

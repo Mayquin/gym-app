@@ -17,4 +17,7 @@
     <string name="warning_password_level">Password level security</string>
     <string name="warning_password_level_strong">Strong</string>
     <string name="warning_password_level_weak">Weak</string>
+
+    <!-- Home Screen -->
+    <string name="placeholderHomeDescription">Work in progress…</string>
 </resources>
